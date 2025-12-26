@@ -597,7 +597,7 @@
     <script>
         // CONFIGURAÇÃO - EDITAR ESTES VALORES
         const API_URL = 'https://sistema-eclesial-backend.onrender.com'; // URL do seu backend no Render
-        const API_KEY = 'default-key'; // Mesma chave do backend
+        const API_KEY = 'sb_secret_QCFJFgHUuQqj4HQPKp1paA_pyeEAiti'; // Mesma chave do backend
         let authToken = '';
         let currentMembroId = null;
 
@@ -942,25 +942,35 @@
         }
 
         async function exportMembrosExcel() {
-            try {
-                const response = await fetch(`${API_URL}/api/membros/exportar-excel`, {
-                    headers: {'Authorization': `Bearer ${authToken}`}
-                });
-                
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `membros_${new Date().toISOString().split('T')[0]}.xlsx`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                }
-            } catch (error) {
-                alert('Erro ao exportar: ' + error);
-            }
+    try {
+        const response = await fetch(`${API_URL}/api/membros/exportar-csv`, {
+            headers: {'Authorization': `Bearer ${authToken}`}
+        });
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `membros_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } else {
+            const error = await response.json();
+            alert('Erro ao exportar: ' + error.error);
         }
+    } catch (error) {
+        alert('Erro ao exportar: ' + error);
+    }
+
+    async function gerarRelatorioDespesas() {
+    const mesAno = document.getElementById('mesDespesas').value;
+    const [ano, mes] = mesAno.split('-');
+    
+    window.open(`${API_URL}/api/relatorios/despesas?mes=${mes}&ano=${ano}`, '_blank');
+}
+}
 
         // ========== TRANSAÇÕES PIX ==========
         async function loadTransacoes() {
